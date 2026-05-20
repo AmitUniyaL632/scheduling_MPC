@@ -70,11 +70,16 @@ end
 GHI_D1        = data.GHI_W_m2(1:48);
 Temp_D1       = data.Temp_C(1:48);
 Load_D1       = data.Load_kW(1:48);
+Wind_speed_D1  = data.wind_speed(1:48);
+Wind_dir_D1    = data.wind_dir(1:48);
 
 % Extract Day 2 Data (Rows 49 to 96)
 GHI_D2        = data.GHI_W_m2(49:96);
 Temp_D2       = data.Temp_C(49:96);
 Load_D2       = data.Load_kW(49:96);
+wind_speed_D2  = data.wind_speed(49:96);
+Wind_dir_D2    = data.wind_dir(49:96);
+
 
 % Extract time-varying electricity tariffs for MPC
 C_buy_vec     = data.Buy_Price;
@@ -87,6 +92,22 @@ pv_config = struct('PV_Area', PV_Area, 'PV_Efficiency', PV_Efficiency, ...
                    'Temp_Ref', Temp_Ref, 'Beta_Temp', Beta_Temp, 'NOCT', NOCT);
 PV_D1 = pv_physics_model(pv_config, GHI_D1, Temp_D1);
 PV_D2 = pv_physics_model(pv_config, GHI_D2, Temp_D2);
+
+% Calculate WTG power using the physics-informed Model
+wtg_config = struct('rho',rho,'R',R_wtg,'omega',omega_wtg,...
+    'P_rated',P_wtg_rated,'v_cut_in',v_cut_in,'v_cut_out',v_cut_out);
+
+wind_speed = data.wind_speed;
+wind_dir   = data.wind_dir;
+
+WTG_D1 = wtg_physics_model(wtg_config, wind_speed(1:48), wind_dir(1:48));
+WTG_D2 = wtg_physics_model(wtg_config, wind_speed(49:96), wind_dir(49:96));
+WTG_2d = [WTG_D1; WTG_D2];
+
+PV_2d = [PV_D1; PV_D2];
+
+% Update combined generation passed to matrix_formulator:
+P_gen_2d = PV_2d + WTG_2d;  % treat as total non-dispatchable generation
 
 % Split total load into Critical (70%) and Non-Critical (30%)
 % Adjust these ratios based on actual microgrid requirements.

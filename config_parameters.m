@@ -25,6 +25,14 @@ eta_pv      = 1.0;          % [-]  Inverter + coupling efficiency (lumped)
 %        ems_main.m as a synthetic curtailable forecast; P_pv_max sets
 %        the upper bound for every interval.
 
+% --- Wind Turbine Generator ─────────────────────────────────
+rho        = 1.225;   % kg/m³
+R_wtg      = 2.5;     % rotor radius (m) — tune to get 2 kW rated
+omega_wtg  = 4.0;     % rad/s
+v_cut_in   = 3.0;     % m/s
+v_cut_out  = 25.0;    % m/s
+P_wtg_rated = 2.0;    % kW
+
 % ── Battery Energy Storage System (BESS) ─────────────────────────────────
 BESS_Ah     = 82;           % [Ah]  Rated capacity at C/10 rate
 V_dc        = 400;          % [V]   DC bus voltage (nominal)
