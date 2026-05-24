@@ -27,11 +27,11 @@ eta_pv      = 1.0;          % [-]  Inverter + coupling efficiency (lumped)
 
 % --- Wind Turbine Generator ─────────────────────────────────
 rho        = 1.225;   % kg/m³
-R_wtg      = 2.5;     % rotor radius (m) — tune to get 2 kW rated
-omega_wtg  = 4.0;     % rad/s
+R_wtg      = 4.0;     % rotor radius (m) 
+omega_wtg  = 9.3;     % rad/s
 v_cut_in   = 3.0;     % m/s
 v_cut_out  = 25.0;    % m/s
-P_wtg_rated = 100.0;    % kW
+P_wtg_rated = 5.0;    % kW
 
 % ── Battery Energy Storage System (BESS) ─────────────────────────────────
 BESS_Ah     = 82;           % [Ah]  Rated capacity at C/10 rate
