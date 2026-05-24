@@ -293,23 +293,24 @@ print(gcf, 'ems_results_mpc.png', '-dpng', '-r150');
 fprintf('\nFigure saved as ems_results_mpc.png\n');
 
 % =========================================================================
-% PV vs Load Power Comparison
+% PV vs Load vs Wind Power Comparison
 % =========================================================================
-figure('Name','PV vs Load Power', 'Position', [150 150 900 420], 'Color', 'w');
+figure('Name','PV vs Load vs Wind Power', 'Position', [150 150 900 420], 'Color', 'w');
 plot(t_2day, PV_2d, '-o', 'LineWidth', 1.6, 'MarkerSize', 3, 'DisplayName', 'PV generation');
 hold on;
+plot(t_2day, WTG_2d, '-^', 'LineWidth', 1.6, 'MarkerSize', 3, 'DisplayName', 'Wind turbine power');
 plot(t_2day, P_CL_2d + P_NCL_2d, '-s', 'LineWidth', 1.6, 'MarkerSize', 3, 'DisplayName', 'Total load');
 xline(24, ':k', 'Day boundary', 'LabelHorizontalAlignment','left');
 
 grid on;
 xlabel('Hour of Horizon [h]');
 ylabel('Power [kW]');
-title('PV Generation vs Total Load');
+title('PV Generation vs Wind Power vs Total Load');
 legend('Location','best');
 set(gca, 'XLim', [0 48], 'XTick', 0:6:48, 'XTickLabel', x_tick_labels, 'FontSize', 11);
 set(gcf, 'Toolbar', 'none');
-print(gcf, 'ems_results_pv_vs_load.png', '-dpng', '-r150');
-fprintf('Figure saved as ems_results_pv_vs_load.png\n');
+print(gcf, 'ems_results_pv_vs_load_vs_wind.png', '-dpng', '-r150');
+fprintf('Figure saved as ems_results_pv_vs_load_vs_wind.png\n');
 
 % =========================================================================
 % OPTIONAL: Print per-interval decision table (first 10 intervals)
