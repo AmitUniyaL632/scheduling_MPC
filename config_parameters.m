@@ -13,13 +13,24 @@
 %            (see paper Table I and Section III-A for parameter sources)
 % =========================================================================
 
+data = readtable('microgrid_data.csv');
+Solar_profile = data.GHI_W_m2;
+Temperature_profile = data.Temp_C;
+Load_profile = data.Load_kW;
+grid_import_price = data.Buy_Price;
+grid_export_price = data.Sell_Price;
+Wind_profile = data.wind_speed;
+sample_instant = 1:1:96;
+
+N = sample_instant;
+
 % ── Temporal discretisation ──────────────────────────────────────────────
 Time_step   = 0.5;          % [h]  Length of each decision interval (30 min)
 N_steps     = 48;           % [-]  Number of intervals per 24-hour day
 t_vec       = (1:N_steps).' * Time_step; % [h]  Cumulative hour vector (0.5 … 24)
 
 % ── PV Generator ─────────────────────────────────────────────────────────
-P_pv_max    = 100;          % [kW] Rated DC capacity of the PV array
+P_pv_max    = 10;          % [kW] Rated DC capacity of the PV array
 eta_pv      = 1.0;          % [-]  Inverter + coupling efficiency (lumped)
 %  Note: The actual per-interval PV profile P_pv(t) is generated in
 %        ems_main.m as a synthetic curtailable forecast; P_pv_max sets
@@ -63,14 +74,14 @@ P_cl_max    = 5.0;          % [kW] Peak critical load (reference magnitude)
 P_ncl_max   = 3.0;          % [kW] Peak non-critical load (reference magnitude)
 
 % ── Economic Parameters ──────────────────────────────────────────────────
-C_p         = 5;            % [Yen/kWh] Penalty cost for NCL shedding
+C_p         = 5;            % [Rupee/kWh] Penalty cost for NCL shedding
 %  Grid tariff vectors (flat rates used here; replace with TOU if needed):
-C_buy       = 20;           % [Yen/kWh] Unit cost of purchasing from grid
-C_sell      = 8;            % [Yen/kWh] Unit revenue from selling to grid
+C_buy       = data.Buy_Price;           % [Rupee/kWh] Unit cost of purchasing from grid
+C_sell      = data.Sell_Price;            % [Rupee/kWh] Unit revenue from selling to grid
 %  Combined cost vector per unit energy exchanged in one Time_step:
-%    cost_buy  = C_buy  * Time_step   [Yen per kW of P_grid_buy  per step]
-%    cost_sell = C_sell * Time_step   [Yen per kW of P_grid_sell per step]
-%    cost_shed = C_p    * Time_step   [Yen per kW of P_shed      per step]
+%    cost_buy  = C_buy  * Time_step   [Rupee per kW of P_grid_buy  per step]
+%    cost_sell = C_sell * Time_step   [Rupee per kW of P_grid_sell per step]
+%    cost_shed = C_p    * Time_step   [Rupee per kW of P_shed      per step]
 
 % ── Two-Stage SOC Target (Paper Baseline) ────────────────────────────────
 SOC_target_D1_end = 0.45;   % [-]  Target SOC at end of Day 1 (= start Day 2)
@@ -116,5 +127,5 @@ fprintf('=== Microgrid EMS – Configuration Loaded ===\n');
 fprintf('  BESS capacity  : %.2f kWh  (usable: %.2f kWh)\n', E_bess_kWh, E_usable);
 fprintf('  SOC window     : [%.2f, %.2f]  |  SOC_init = %.2f\n', SOC_min, SOC_max, SOC_init);
 fprintf('  Time step      : %.1f h  (%d steps/day)\n', Time_step, N_steps);
-fprintf('  C_buy / C_sell : %d / %d Yen/kWh  |  C_penalty = %d Yen/kWh\n', C_buy, C_sell, C_p);
+fprintf('  C_buy / C_sell : %d / %d Rupee/kWh  |  C_penalty = %d Rupee/kWh\n', C_buy, C_sell, C_p);
 fprintf('=============================================\n\n');
